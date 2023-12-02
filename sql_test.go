@@ -11,13 +11,13 @@ import (
 
 // eksekusi perintah sql
 func TestExecSql(t *testing.T) {
-	db := GetConnection()
-	defer db.Close()
+	db := GetConnection() //panggil connection db nya
+	defer db.Close()      //jangan lupa untuk close
 
 	ctx := context.Background()
 
-	script := "INSERT INTO customer(name, email, balance, rating, birth_date, married) VALUES('gusion', 'rafa@gmail.com', 10000, 4.6, '1999-9-9', true)"
-	_, err := db.ExecContext(ctx, script)
+	script := "INSERT INTO customer(name, email, balance, rating, birth_date, married) VALUES('gusion', 'rafa@gmail.com', 10000, 4.6, '1999-9-9', true)" //cara mengirim perintah sql insert
+	_, err := db.ExecContext(ctx, script)                                                                                                                //untuk operasi yang tidak membutuhkan hasil, bisa menggunakan perintal Exec(ExecContext)
 	if err != nil {
 		panic(err)
 	}
@@ -33,11 +33,11 @@ func TestQuerySql(t *testing.T) {
 	ctx := context.Background()
 
 	script := "SELECT id, name FROM customer"
-	rows, err := db.QueryContext(ctx, script)
+	rows, err := db.QueryContext(ctx, script) //function yg bisa melakukan query ke db yg bisa mengembalikan result itu adalah QueryContext
 	if err != nil {
 		panic(err)
 	}
-	defer rows.Close()
+	defer rows.Close() //jangan lupa kalau rows itu perlu ditutup
 
 	// iterasi rows
 	for rows.Next() {
@@ -69,7 +69,7 @@ func TestQuerySqlComplex(t *testing.T) {
 	for rows.Next() {
 		var id int
 		var name string
-		var email sql.NullString
+		var email sql.NullString //jika menginginkan tipe data nul di kolom, maka gunakan "sql.NullString"
 		var balance int32
 		var rating float64
 		var birth_date, created_at time.Time
@@ -81,7 +81,9 @@ func TestQuerySqlComplex(t *testing.T) {
 		fmt.Println("=============")
 		fmt.Println("Id:", id)
 		fmt.Println("Name:", name)
-		fmt.Println("Email:", email)
+		if email.Valid { //kode untuk mengecek null atau tidak
+			fmt.Println("Email", email.String)
+		}
 		fmt.Println("Balance:", balance)
 		fmt.Println("Rating:", rating)
 		fmt.Println("Birth date:", birth_date)
@@ -131,7 +133,7 @@ func TestSqlInjectionSafe(t *testing.T) {
 	username := "admin"
 	password := "admin"
 
-	script := "SELECT username FROM user WHERE username = ? AND password = ? LIMIT 1"
+	script := "SELECT username FROM user WHERE username = ? AND password = ? LIMIT 1" //"?" berguna untuk mencegah terjadinya sql injection
 	rows, err := db.QueryContext(ctx, script, username, password)
 	if err != nil {
 		panic(err)
@@ -161,7 +163,7 @@ func TestExecSqlParameter(t *testing.T) {
 	username := "laksa"
 	password := "laksa"
 
-	script := "INSERT INTO user(username, password) VALUES(?, ?)"
+	script := "INSERT INTO user(username, password) VALUES(?, ?)" //"?" berguna untuk mencegah terjadinya sql injection
 	_, err := db.ExecContext(ctx, script, username, password)
 	if err != nil {
 		panic(err)
@@ -230,18 +232,18 @@ func TestTransaction(t *testing.T) {
 	defer db.Close()
 
 	ctx := context.Background()
-	tx, err := db.Begin()
+	tx, err := db.Begin() //menggunakan transaction bertujuan untuk mencegah semua perintah sql yang kita kirim tidak secara otomatis di commit ke db
 	if err != nil {
 		panic(err)
 	}
-	
+
 	script := "INSERT INTO comments(email, comment) VALUES(?, ?)"
 	// do transaction
 	for i := 0; i < 10; i++ {
 		email := "nolan" + strconv.Itoa(i) + "@gmail.com"
 		comment := "Komentar ke " + strconv.Itoa(i)
 
-		result, err := tx.ExecContext(ctx, script,email, comment)
+		result, err := tx.ExecContext(ctx, script, email, comment)
 		if err != nil {
 			panic(err)
 		}
@@ -255,7 +257,7 @@ func TestTransaction(t *testing.T) {
 		fmt.Println("Comment Id ", id)
 	}
 
-	// err = tx.Commit()
+	// err = tx.Commit()// untuk nge commit
 	err = tx.Rollback() // untuk membatalkan proses transaksinya (data tidak jadi di commit)
 	if err != nil {
 		panic(err)
