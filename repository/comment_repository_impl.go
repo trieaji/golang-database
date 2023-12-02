@@ -13,7 +13,7 @@ type commentRepositoryImpl struct {
 }
 
 // implementasi new repository
-func NewCommentRepository(db *sql.DB) CommentRepository {
+func NewCommentRepository(db *sql.DB) CommentRepository { //kasarannya sebagai connection ke db, jadi setelah memenuhi kontrak(interface), maka dilakukan connection ke db
 	return &commentRepositoryImpl{DB: db}
 }
 
@@ -39,7 +39,7 @@ func (repository *commentRepositoryImpl) FindById(ctx context.Context, id int32)
 		return comment, err
 	}
 	defer rows.Close()
-	if rows.Next(){
+	if rows.Next() {
 		// ada
 		rows.Scan(&comment.Id, &comment.Email, &comment.Comment)
 		return comment, nil
@@ -56,7 +56,7 @@ func (repository *commentRepositoryImpl) FindAll(ctx context.Context) ([]entity.
 	}
 	defer rows.Close()
 	var comments []entity.Comment
-	for rows.Next(){
+	for rows.Next() {
 		comment := entity.Comment{}
 		rows.Scan(&comment.Id, &comment.Email, &comment.Comment)
 		comments = append(comments, comment)
@@ -64,4 +64,3 @@ func (repository *commentRepositoryImpl) FindAll(ctx context.Context) ([]entity.
 
 	return comments, nil
 }
-
