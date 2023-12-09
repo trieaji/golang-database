@@ -43,7 +43,7 @@ func TestQuerySql(t *testing.T) {
 	for rows.Next() {
 		var id int
 		var name string
-		err := rows.Scan(&id, &name)
+		err := rows.Scan(&id, &name)//scan berguna untuk membaca query
 		if err != nil {
 			panic(err)
 		}
