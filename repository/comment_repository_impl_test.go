@@ -13,9 +13,11 @@ func TestCommentInsert(t *testing.T) {
 	commentRepository := NewCommentRepository(golangdatabase.GetConnection())
 
 	ctx := context.Background()
+	fmt.Println("ctx test")
+	fmt.Println(ctx)
 	comment := entity.Comment{
-		Email: "repository@test.com",
-		Comment: "Test Repository",
+		Email: "repository@gmail.com",
+		Comment: "Test Repository again",
 	}
 
 	result, err := commentRepository.Insert(ctx, comment)
