@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"golang-database/entity"
 	"strconv"
 )
@@ -18,8 +19,14 @@ func NewCommentRepository(db *sql.DB) CommentRepository { //kasarannya sebagai c
 }
 
 func (repository *commentRepositoryImpl) Insert(ctx context.Context, comment entity.Comment) (entity.Comment, error) {
+	fmt.Println("=== print ===")
+	fmt.Println(ctx)
 	script := "INSERT INTO comments(email, comment) VALUES (?, ?)"
+	fmt.Println("=== print2 ===")
+	fmt.Println(ctx)
 	result, err := repository.DB.ExecContext(ctx, script, comment.Email, comment.Comment)
+	fmt.Println("=== print3 ===")
+	fmt.Println(ctx)
 	if err != nil {
 		return comment, err
 	}
